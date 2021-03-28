@@ -1,0 +1,29 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+url = "https://deckbox.org/sets/2570088?p="
+r = requests.get(url)
+soup = BeautifulSoup(r.content, "html.parser") 
+
+
+price_df=pd.DataFrame()
+
+
+def getPages(url,df):
+    for i in range(1,120):
+        prices =pd.read_html(f'{url}{i}',header=[1])[1]
+        prices.rename(columns={"Unnamed: 0":"Quantity"},inplace=True)
+        prices.drop(columns={"Details (E/R) (E/#)"},inplace=True)
+        prices["Avg."]=prices["Avg."].str.replace("$", "")
+        prices["Avg."]=prices["Avg."].astype(float)
+        prices["Total Value"]=prices["Avg."]*prices["Quantity"]
+        price_df=pd.DataFrame(prices)
+        df=df.append(price_df)
+    return df
+
+
+
+totalcollection = getPages(url,price_df
+
+totalcollection["Total Value"].sum()
