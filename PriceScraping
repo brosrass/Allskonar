@@ -1,0 +1,54 @@
+from requests_html import HTMLSession
+import re
+from datetime import date
+from csv import DictWriter
+
+def getprice_byko1():
+    r= s.get("https://byko.is/verkfaeri-og-bunadur/skipulag-og-bunadur/troppur-stigar-vinnupallar?ProductID=170673")
+    return r.html.find("span.priceTag_Price", first=True).text
+
+def getprice_huso1():
+    r= s.get("https://husasmidjan.is/netverslun/verkfaeri/alstigar-troppur-vinnupallar/stigar/?itemid=5079007")
+    return r.html.find("div.current-price", first=True).text
+
+def getprice_huso2():
+    r= s.get("https://husasmidjan.is/netverslun/verkfaeri/alstigar-troppur-vinnupallar/stigar/?itemid=5079012")
+    return r.html.find("div.current-price", first=True).text
+
+def getprice_huso3():
+    r= s.get("https://husasmidjan.is/netverslun/verkfaeri/alstigar-troppur-vinnupallar/stigar/?itemid=5079026")
+    return r.html.find("div.current-price", first=True).text
+
+def clean(price):
+    return float(re.sub("[^0-9]", "", price))
+
+
+def main():
+    today = date.today()
+    entry = {
+        "date": today.strftime("%d/%m/%Y"),
+        "byko1": clean(getprice_byko1()),
+        "huso1": clean(getprice_huso1()),
+        "huso2": clean(getprice_huso2()),
+        "huso3": clean(getprice_huso3()),
+    }
+    return entry
+
+
+def save_tocsv(entry):
+    columns = ["date", "byko1", "huso1", "huso2", "huso3"]
+    with open("productdata.csv", "a") as f:
+        W = DictWriter(f, fieldnames=columns)
+        W.writerow(entry)
+    return
+
+if __name__ == "__main__":
+    s = HTMLSession()
+    entry =main()
+    save_tocsv(entry)
+
+
+
+
+
+
