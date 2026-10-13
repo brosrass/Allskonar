@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Raw site captures (third-party screenshots; keep local, do not redistribute)
+teardown/*/capture/
